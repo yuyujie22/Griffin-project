@@ -77,6 +77,7 @@ namespace PixelCrushers
         public override void Awake()
         {
             base.Awake();
+           
             if (m_multiscene) m_multisceneData = new MultiscenePositionData();
             else m_data = new PositionData();
             m_navMeshAgent = target.GetComponent<NavMeshAgent>();

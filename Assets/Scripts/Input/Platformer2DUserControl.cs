@@ -11,9 +11,15 @@ public class Platformer2DUserControl : MonoBehaviour
 
     void OnEnable()
     {
-        if(GameManager.Instance.player == null)
+        if(GameManager.Instance != null)
         {
-            GameManager.Instance.RegisterPlayer(this.gameObject);
+            if(GameManager.Instance.player == null)
+            {
+                GameManager.Instance.RegisterPlayer(this.gameObject);
+                Debug.Log("注册player");
+
+            }
+                
 
         }
     }
@@ -22,6 +28,7 @@ public class Platformer2DUserControl : MonoBehaviour
     private void Awake()
     {
         m_Character = GetComponent<PlatformerCharacter2D>();
+       
     }
 
 

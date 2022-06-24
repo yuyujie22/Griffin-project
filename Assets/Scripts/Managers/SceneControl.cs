@@ -18,6 +18,12 @@ public class SceneControl : Singleton<SceneControl>, IEndGameObserver
         DontDestroyOnLoad(this);
         
     }
+    protected override void OnDestroy()
+    {
+        base.Awake();
+                      
+    }
+
     protected void Start()
     {
         if(player == null)
@@ -56,8 +62,10 @@ public class SceneControl : Singleton<SceneControl>, IEndGameObserver
             Debug.Log(sceneName+"!");
             TransitionDestination.DestinationTag c = (TransitionDestination.DestinationTag)TransitionDestination.DestinationTag.Parse(typeof(TransitionDestination.DestinationTag), sceneName, true);
             Debug.Log(GetDestination(c).gameObject.name+"!!");
-            yield return player = Instantiate(playerPrefab,GetDestination(c).gameObject.transform.position,GetDestination(c).gameObject.transform.rotation);
+            if(player == null)
+                player = GameManager.Instance.player;
             
+            player= Instantiate(playerPrefab, GetDestination(c).gameObject.transform.position,GetDestination(c).gameObject.transform.rotation);
             yield break;
 
         }
@@ -93,26 +101,7 @@ public class SceneControl : Singleton<SceneControl>, IEndGameObserver
 
     }
  
-    public void TransitionToLoadFirstLever()
-    {
-        StartCoroutine(LoadLevel("Scene_01"));
-
-    }
-    IEnumerator LoadLevel(string scene)
-    {
-       
-        if(scene != "")
-        {
-           
-            yield return SceneManager.LoadSceneAsync(scene);
-            TransitionDestination.DestinationTag c = (TransitionDestination.DestinationTag)TransitionDestination.DestinationTag.Parse(typeof(TransitionDestination.DestinationTag), scene, true);
-            yield return player = Instantiate(playerPrefab,GetDestination(c).gameObject.transform.position,GetDestination(c).gameObject.transform.rotation);
-            
-            yield break;
-        }
-
-        
-    }
+ 
         /// <summary>
     /// 字符串转Enum
     /// </summary>

@@ -2,8 +2,9 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 namespace PixelCrushers
 {
 
@@ -14,7 +15,7 @@ namespace PixelCrushers
     [AddComponentMenu("")] // Use wrapper instead.
     public class SaveSystem : MonoBehaviour
     {
-
+        public GameObject playerPrefab;
         public const int NoSceneIndex = -1;
 
         /// <summary>
@@ -376,19 +377,62 @@ namespace PixelCrushers
         {
             return UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
         }
-
+       
         private static IEnumerator LoadSceneInternal(string sceneName)
         {
+            Debug.Log("LoadSceneInternal"+sceneName);
             if (sceneTransitionManager == null)
             {
+                Debug.Log("sceneTransitionManager == null");
                 if (sceneName.StartsWith("index:"))
                 {
+                    
                     var index = SafeConvert.ToInt(sceneName.Substring("index:".Length));
                     UnityEngine.SceneManagement.SceneManager.LoadScene(index);
+                    //获取场景
+                    Scene gameScene = SceneManager.GetSceneByBuildIndex(index);
+                    Debug.Log("获取场景"+gameScene.name);
+                    Debug.Log("获取场景"+gameScene);
+                    GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                    //查找物体
+                    Debug.Log("查找物体"+enterPortal.name);
+                    GameObject player = gameScene.GetRootGameObjects().FirstOrDefault(x => x.tag == "Player");
+                    Debug.Log("查找Player"+player.name);
+                
+                    if(player == null)
+                    {
+                        Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                        Debug.Log("生成Player");
+                    }
+                    else
+                    {
+                        Debug.Log("场景有Player");
+                    }
+                                    
                 }
                 else
                 {
                     UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+                    //获取场景
+                    Scene gameScene = SceneManager.GetSceneByName(sceneName);
+                    Debug.Log("获取场景"+gameScene.name);
+                    Debug.Log("获取场景"+gameScene);
+                    //查找物体
+                    GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                    Debug.Log("查找物体"+enterPortal.name);
+                    GameObject player = gameScene.GetRootGameObjects().FirstOrDefault(x => x.tag == "Player");
+                    Debug.Log("查找Player"+player.name);
+                
+                    if(player == null)
+                    {
+                        Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                        Debug.Log("生成Player");
+                    }
+                    else
+                    {
+                        Debug.Log("场景有Player");
+                    }
+                   
                 }
                 yield break;
             }
@@ -404,11 +448,61 @@ namespace PixelCrushers
             if (sceneName.StartsWith("index:"))
             {
                 var index = SafeConvert.ToInt(sceneName.Substring("index:".Length));
-                m_currentAsyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(index);
+                m_currentAsyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+                yield return m_currentAsyncOperation;
+                //获取场景
+                    Scene gameScene = SceneManager.GetSceneByName(sceneName);
+                    Debug.Log("Find Scene"+gameScene.name);
+                  
+                    //查找物体
+                    GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                    yield return null;
+                    if(enterPortal!=null)
+                        Debug.Log("Find enterPortal"+enterPortal.name);
+                    else
+                    {
+                        Debug.Log("Cannot find enterPortal");
+                    }
+                    
+                    GameObject player = gameScene.GetRootGameObjects().FirstOrDefault(x => x.tag == "Player");
+                    yield return null;
+                    if(player != null)
+                        Debug.Log("Find Player"+player.name);
+                    else
+                    {
+                        Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                        Debug.Log("Create Player");
+                    }
             }
             else
             {
+                
                 m_currentAsyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+                yield return m_currentAsyncOperation;
+                //获取场景
+                    Scene gameScene = SceneManager.GetSceneByName(sceneName);
+                    Debug.Log("Find Scene"+gameScene.name);
+                  
+                    //查找物体
+                    GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                    yield return null;
+                    if(enterPortal!=null)
+                        Debug.Log("Find enterPortal"+enterPortal.name);
+                    else
+                    {
+                        Debug.Log("Cannot find enterPortal");
+                    }
+                    
+                    GameObject player = gameScene.GetRootGameObjects().FirstOrDefault(x => x.tag == "Player");
+                    yield return null;
+                    if(player != null)
+                        Debug.Log("Find Player"+player.name);
+                    else
+                    {
+                        Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                        Debug.Log("Create Player");
+                    }
+                    
             }
             while (m_currentAsyncOperation != null && !m_currentAsyncOperation.isDone)
             {
@@ -601,6 +695,7 @@ namespace PixelCrushers
             }
             if (loadStarted.GetInvocationList().Length > 1)
             {
+                Debug.Log("LoadFromSlot:front LoadFromSlotCoroutine");
                 instance.StartCoroutine(LoadFromSlotCoroutine(slotNumber));
             }
             else
@@ -613,6 +708,7 @@ namespace PixelCrushers
         {
             loadStarted();
             yield return null;
+            Debug.Log("LoadFromSlotCoroutine:front LoadFromSlotNow slotNumber"+slotNumber);
             LoadFromSlotNow(slotNumber);
             //--- Always notify, in case loadEnded listeners are added via code:
             //--- if (loadEnded.GetInvocationList().Length > 1)
@@ -627,6 +723,7 @@ namespace PixelCrushers
 
         private static void LoadFromSlotNow(int slotNumber)
         {
+            Debug.Log("LoadFromSlotNow:front LoadGame");
             LoadGame(storer.RetrieveSavedGameData(slotNumber));
         }
 
@@ -788,7 +885,9 @@ namespace PixelCrushers
             }
             else if (saveCurrentScene)
             {
+                Debug.Log("LoadGame:front LoadSceneCoroutine");
                 instance.StartCoroutine(LoadSceneCoroutine(savedGameData, null));
+                
             }
             else
             {
@@ -826,6 +925,7 @@ namespace PixelCrushers
             m_savedGameData = savedGameData;
             BeforeSceneChange();
             if (autoUnloadAdditiveScenes) UnloadAllAdditiveScenes();
+            Debug.Log("LoadSceneCoroutine: front LoadSceneInternal");
             yield return LoadSceneInternal(savedGameData.sceneName);
             ApplyDataImmediate();
             // Allow other scripts to spin up scene first:
@@ -915,7 +1015,48 @@ namespace PixelCrushers
         public static void RestartGame(string startingSceneName)
         {
             ResetGameState();
-            instance.StartCoroutine(LoadSceneInternal(startingSceneName));
+            instance.StartCoroutine(LoadFirstSceneInternal(startingSceneName));
+        }
+         private static IEnumerator LoadFirstSceneInternal(string sceneName)
+        {
+            if (sceneTransitionManager == null)
+            {
+                if (sceneName.StartsWith("index:"))
+                {
+                    var index = SafeConvert.ToInt(sceneName.Substring("index:".Length));
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(index);
+                    
+                }
+                else
+                {
+                    UnityEngine.SceneManagement.SceneManager.LoadScene(sceneName);
+                }
+                //获取场景
+                Scene gameScene = SceneManager.GetSceneByBuildIndex(3);
+                Debug.Log("获取场景"+gameScene.name);
+                Debug.Log("获取场景"+gameScene);
+                //查找物体
+                GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                Debug.Log("查找物体"+enterPortal.name);
+                
+                Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                Debug.Log("生成Player");
+                yield break;
+            }
+            else
+            {
+                yield return instance.StartCoroutine(LoadSceneInternalTransitionCoroutine(sceneName));
+                //获取场景
+                Scene gameScene = SceneManager.GetSceneByBuildIndex(3);
+                Debug.Log("获取场景"+gameScene.name);
+                Debug.Log("获取场景"+gameScene);
+                //查找物体
+                GameObject enterPortal = gameScene.GetRootGameObjects().FirstOrDefault(x => x.name == "EnterPortal");
+                Debug.Log("查找物体"+enterPortal.name);
+                
+                Instantiate(SaveSystem.instance.playerPrefab,enterPortal.transform.position,enterPortal.transform.rotation);
+                Debug.Log("生成Player");
+            }
         }
 
         /// <summary>

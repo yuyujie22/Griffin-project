@@ -19,6 +19,7 @@ namespace UnityStandardAssets.CrossPlatformInput.PlatformSpecific
 
         public override bool GetButtonDown(string name)
         {
+            
             return Input.GetButtonDown(name);
         }
 

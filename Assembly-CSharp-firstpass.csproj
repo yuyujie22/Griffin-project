@@ -523,8 +523,8 @@
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\Triggers\Triggers\ConditionObserver.cs" />
      <Compile Include="Assets\Plugins\DarkTonic\MasterAudio\ExampleScenes\Scripts\MA_TestUI.cs" />
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\UI\Abstract\Dialogue\AbstractUISubtitleControls.cs" />
-     <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\Lua\Lua Interpreter\Expr\MethodCall.cs" />
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Wrappers\MVC\Actor\ActorSubtitleColor.cs" />
+     <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\Lua\Lua Interpreter\Expr\MethodCall.cs" />
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\Lua\Lua Interpreter\Expr\Operation.cs" />
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Wrappers\Triggers\Trigger\RangeTrigger.cs" />
      <Compile Include="Assets\Plugins\Pixel Crushers\Dialogue System\Scripts\UI\Unity UI\Quest\UnityUIQuestLogWindow.cs" />
